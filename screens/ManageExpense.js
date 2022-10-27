@@ -1,12 +1,14 @@
 import { StyleSheet, TextInput, View } from "react-native";
-import React, { useLayoutEffect, useContext } from "react";
+import React, { useLayoutEffect, useContext, useState } from "react";
 import IconButton from "../components/UI/IconButton";
 import { GlobalStyles } from "../constants/styles";
 import { ExpensesContext } from "../store/expenses-context";
 import ExpenseForm from "../components/ManageExpense/ExpenseForm";
 import { deleteExpense, storeExpense, updateExpense } from "../util/http";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
 
 export default function ManageExpense({ route, navigation }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const expensesCtx = useContext(ExpensesContext);
 
   // Checking whether this component is in edit or create mode
@@ -23,7 +25,9 @@ export default function ManageExpense({ route, navigation }) {
   }, [navigation, isEditing]);
 
   async function deleteExpenseHandler() {
+    setIsSubmitting(true);
     await deleteExpense(editedExpenseId);
+    // setIsSubmitting(false) Not need as we are going back after this.
     expensesCtx.deleteExpense(editedExpenseId);
     navigation.goBack();
   }
@@ -31,6 +35,7 @@ export default function ManageExpense({ route, navigation }) {
     navigation.goBack();
   }
   async function confirmHandler(expenseData) {
+    setIsSubmitting(true);
     if (isEditing) {
       expensesCtx.updateExpense(editedExpenseId, expenseData);
       await updateExpense(editedExpenseId, expenseData);
@@ -39,6 +44,10 @@ export default function ManageExpense({ route, navigation }) {
       expensesCtx.addExpense({ ...expenseData, id: id });
     }
     navigation.goBack();
+  }
+
+  if (isSubmitting) {
+    return <LoadingOverlay />;
   }
 
   return (
