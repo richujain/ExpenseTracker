@@ -19,11 +19,11 @@ export default function ExpenseForm({
       //   isValid: defaultValues ? true : false,
     },
     date: {
-      isValid: defaultValues ? getFormattedDate(defaultValues.date) : "",
+      value: defaultValues ? getFormattedDate(defaultValues.date) : "",
       isValid: true,
     },
     description: {
-      isValid: defaultValues ? defaultValues.description.toString() : "",
+      value: defaultValues ? defaultValues.description.toString() : "",
       isValid: true,
     },
   });
@@ -35,10 +35,9 @@ export default function ExpenseForm({
       description: inputs.description.value,
     };
 
-    const amountIsValid = !isNaN(expenseData) && expenseData.amount > 0;
+    const amountIsValid = !isNaN(expenseData.amount) && expenseData.amount > 0;
     const dateIsValid = expenseData.date.toString() !== "Invalid Date";
     const descriptionIsValid = expenseData.description?.trim().length > 0;
-
     if (!amountIsValid || !dateIsValid || !descriptionIsValid) {
       //   Alert.alert("Invalid input", "Please check your input values");
       setInputs((curInputs) => {
@@ -107,7 +106,7 @@ export default function ExpenseForm({
           // autoCapitalize: 'sentences' //default
           // autoCorrect: false, //default is true
           onChangeText: inputChangedHandler.bind(this, "description"),
-          value: inputs.description.values,
+          value: inputs.description.value,
         }}
       />
       {formIsInvalid && (
